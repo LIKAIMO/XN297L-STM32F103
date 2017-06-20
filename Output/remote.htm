@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Output\remote.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Output\remote.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060020: Last Updated: Tue Jun 20 09:18:45 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060020: Last Updated: Tue Jun 20 18:36:36 2017
 <BR><P>
 <H3>Maximum Stack Usage =        100 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -239,15 +239,17 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;micros
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;loop
-<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_Carrier
-<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_RxMode
+<BR>[Called By]<UL><LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_Carrier
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_DumpRxData
 </UL>
 
-<P><STRONG><a name="[40]"></a>delay_us</STRONG> (Thumb, 24 bytes, Stack size 16 bytes, delay.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;micros
+<P><STRONG><a name="[40]"></a>delay_us</STRONG> (Thumb, 24 bytes, Stack size 16 bytes, delay.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = delay_us
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_TxMode
+<BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;micros
+</UL>
+<BR>[Called By]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_RxMode
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_TxMode
 </UL>
 
 <P><STRONG><a name="[41]"></a>LedInit</STRONG> (Thumb, 270 bytes, Stack size 8 bytes, led.o(.text))
@@ -320,6 +322,7 @@ Global Symbols
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
 <BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_DumpRxData
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_TxData
 <LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testXN
 </UL>
 
@@ -332,6 +335,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_Carrier
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_Init
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_DumpRxData
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_TxData
 <LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testXN
 </UL>
@@ -369,8 +373,9 @@ Global Symbols
 <LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_GetStatus
 </UL>
 
-<P><STRONG><a name="[5d]"></a>RF_TxMode</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, nrf24l01.o(.text), UNUSED)
+<P><STRONG><a name="[5d]"></a>RF_TxMode</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, nrf24l01.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
+<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_us
 </UL>
@@ -381,7 +386,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
 <LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_us
 </UL>
 <BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -403,26 +408,29 @@ Global Symbols
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
 
-<P><STRONG><a name="[63]"></a>ucRF_TxData</STRONG> (Thumb, 80 bytes, Stack size 24 bytes, nrf24l01.o(.text), UNUSED)
+<P><STRONG><a name="[63]"></a>ucRF_TxData</STRONG> (Thumb, 104 bytes, Stack size 24 bytes, nrf24l01.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
 <LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_ReadReg
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteBuf
+<LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_ReadBuf
 <LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 
-<P><STRONG><a name="[64]"></a>ucRF_DumpRxData</STRONG> (Thumb, 74 bytes, Stack size 16 bytes, nrf24l01.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = ucRF_DumpRxData &rArr; RF_ReadBuf &rArr; SPI_RW
+<P><STRONG><a name="[64]"></a>ucRF_DumpRxData</STRONG> (Thumb, 94 bytes, Stack size 16 bytes, nrf24l01.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = ucRF_DumpRxData &rArr; RF_WriteBuf &rArr; SPI_RW
 </UL>
 <BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
+<LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteBuf
 <LI><a href="#[57]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_ReadBuf
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;loop
 </UL>
 
-<P><STRONG><a name="[65]"></a>RF_Init</STRONG> (Thumb, 240 bytes, Stack size 32 bytes, nrf24l01.o(.text))
+<P><STRONG><a name="[65]"></a>RF_Init</STRONG> (Thumb, 242 bytes, Stack size 32 bytes, nrf24l01.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = RF_Init &rArr; RF_WriteBuf &rArr; SPI_RW
 </UL>
 <BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
@@ -432,7 +440,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[66]"></a>RF_Carrier</STRONG> (Thumb, 250 bytes, Stack size 40 bytes, nrf24l01.o(.text), UNUSED)
+<P><STRONG><a name="[66]"></a>RF_Carrier</STRONG> (Thumb, 254 bytes, Stack size 40 bytes, nrf24l01.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteBuf
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
@@ -663,9 +671,9 @@ Global Symbols
 
 <P><STRONG><a name="[45]"></a>GPIO_SetBits</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_gpio.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;loop
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkKey
 <LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_RxMode
+<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_TxMode
 <LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_ReadReg
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteReg
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_WriteBuf
@@ -677,8 +685,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[46]"></a>GPIO_ResetBits</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_gpio.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;loop
-<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkKey
+<BR><BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkKey
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_Carrier
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_Init
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RF_SetChannel
@@ -1207,13 +1214,10 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;reduceOnlineData
 </UL>
 
-<P><STRONG><a name="[7a]"></a>loop</STRONG> (Thumb, 58 bytes, Stack size 0 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = loop &rArr; ucRF_DumpRxData &rArr; RF_ReadBuf &rArr; SPI_RW
+<P><STRONG><a name="[7a]"></a>loop</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = loop &rArr; ucRF_DumpRxData &rArr; RF_WriteBuf &rArr; SPI_RW
 </UL>
 <BR>[Calls]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ucRF_DumpRxData
-<LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[35]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>

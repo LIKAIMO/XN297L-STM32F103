@@ -148,6 +148,7 @@ void RF_TxMode(void)
 {
     SPI_CE_L();
     RF_WriteReg(W_REGISTER + CONFIG,  0X8E);							// 将RF设置成TX模式
+	SPI_CE_H(); 
     delay_us(10);
 }
 
@@ -161,7 +162,7 @@ void RF_RxMode(void)
     SPI_CE_L();
     RF_WriteReg(W_REGISTER + CONFIG,  0X8F );							// 将RF设置成RX模式
     SPI_CE_H(); 											// Set CE pin high 开始接收数据
-    delay_ms(2);
+    delay_us(2);
 }
 
 /******************************************************************************/
@@ -205,83 +206,39 @@ void RF_SetChannel( uint8_t Channel)
     RF_WriteReg(W_REGISTER + RF_CH, Channel);
 }
 
-/******************************************************************************/
-//            发送数据：
-//            参数：
-//              1. ucPayload：需要发送的数据首地址
-//              2. length:  需要发送的数据长度
-//              Return:
-//              1. MAX_RT: TX Failure  (Enhance mode)
-//              2. TX_DS:  TX Successful (Enhance mode)
-//              note: Only use in Tx Mode
-//              length 通常等于 PAYLOAD_WIDTH
-/******************************************************************************/
+
 
 void ucRF_TxData( uint8_t *ucPayload,  uint8_t length)
 {
-    /*if(0==ucRF_GetStatus())                                                                        // rf free status                                                                                                                                                                   
-   {
-    RF_WriteBuf(W_TX_PAYLOAD, ucPayload, length); 
-    CE=1;                                                                    		//rf entery tx mode start send data 
-    Delay20us();                                                              		//keep ce high at least 600us
-    CE=0;                                                                                     //rf entery stb3                                                        			
-   } */
-   uint8_t   Status_Temp;
-//    printf("state:%d\n",ucRF_GetStatus());
-//    SPI_CE_H();                                                                    		//rf entery tx mode start send data 
-//    delay_us(20);                                                             		//keep ce high at least 16us
-//    SPI_CE_L();
-	RF_WriteBuf(W_TX_PAYLOAD, ucPayload, length);                               		//write data to txfifo        
-//	SPI_CE_H();
-	                                                                     		//rf entery tx mode start send data 
-//    delay_us(20);                                                             		//keep ce high at least 16us
-//    SPI_CE_L();
-			
-//	printf("state:%d\n",ucRF_ReadReg(STATUS));			                                                                   		//rf entery stb3
-    while(IRQ_STATUS);
-	printf("state:%d\n",ucRF_ReadReg(STATUS));
-	
-    Status_Temp = ucRF_ReadReg(STATUS) & 0x70;                                                  //读取发送完成后的status
-    RF_WriteReg(W_REGISTER + STATUS, Status_Temp);                                 		//清除Status
-    RF_WriteReg(FLUSH_TX,0); 
-	/* if(ucRF_ReadReg(OBSERVE_TX) > 0xCF)						
-    {
-	RF_SetChannel(ucCurrent_Channel);					//清0 OBSERVE_TX
-    } */                                                  			//清 FIFO
-   
-    //return Status_Temp;
-   
-   	
+	uint8_t aa[8] = {255};
+	uint8_t Status_Temp;
+	RF_WriteBuf(W_TX_PAYLOAD, ucPayload, length);                               		//write data to txfifo       
+	while(IRQ_STATUS);
+	ucPayload[0]++;
+	Status_Temp = ucRF_ReadReg(STATUS);
+	if(Status_Temp == 96)
+	{
+		RF_ReadBuf(R_RX_PAYLOAD, aa, length);	
+		printf("aa:%d\n",aa[0]);
+	}
+	RF_WriteReg(FLUSH_TX,0); 
+	RF_WriteReg(FLUSH_RX,0); 
+    RF_WriteReg(W_REGISTER + STATUS, 0x70);                                 		//清除Status   	
 }	
 
-
-/******************************************************************************/
-//            ucRF_DumpRxData
-//            读出接收到的数据：
-//            参数：
-//              1. ucPayload：存储读取到的数据的Buffer
-//              2. length:    读取的数据长度
-//              Return:
-//              1. 0: 没有接收到数据
-//              2. 1: 读取接收到的数据成功
-//              note: Only use in Rx Mode
-//              length 通常等于 PAYLOAD_WIDTH
-/******************************************************************************/
 unsigned char ucRF_DumpRxData( uint8_t *ucPayload,  uint8_t length)
 {
-	
-	//printf("state:%d\n",ucRF_ReadReg(STATUS));
-	//printf("DATAOUT:%d\n",ucRF_ReadReg(RPD));
-    if(IRQ_STATUS==1)
-    {
-      return 0;                                                                 		//若IRQ PIN为高，则没有接收到数据
-    }
-	printf("aa:%d\n",IRQ_STATUS);
-    RF_ReadBuf(R_RX_PAYLOAD, ucPayload, length);                                		//将接收到的数据读出到ucPayload，且清除rxfifo
+	static uint8_t bb[8] = {255};
+    while(IRQ_STATUS);
+	bb[0]--; 
+    RF_ReadBuf(R_RX_PAYLOAD, ucPayload, length);                                		
+	RF_WriteBuf(W_ACK_PAYLOAD, bb, 8);                               		//write data to txfifo 
+	delay_ms(1);
+	printf("bb:%d\n",ucPayload[0]);
+	//while(IRQ_STATUS);
     RF_WriteReg(FLUSH_RX, 0);	
-    RF_WriteReg(W_REGISTER + STATUS, 0x70);                                     		//清除Status
-    //SPI_CE_H();                                                                    		//继续开始接收
-    
+	RF_WriteReg(FLUSH_TX, 0);
+    RF_WriteReg(W_REGISTER + STATUS, 0x70);                                     		//清除Status   
     return 1;
 }
 
@@ -296,50 +253,46 @@ unsigned char ucRF_DumpRxData( uint8_t *ucPayload,  uint8_t length)
 /******************************************************************************/
 void RF_Init(void)
 {
-    uint8_t  BB_cal_data[]    = { 0x0a,0x6d,0x67,0x8c,0x46}; 
+    //uint8_t  BB_cal_data[]    = { 0x0a,0x6d,0x67,0x9c,0x46}; 
+	uint8_t  BB_cal_data[]    = { 0x2a,0xec,0x6f,0x9c,0x46};
     uint8_t  RF_cal_data[]    = {0xf6,0x37,0x5d};
-    uint8_t  RF_cal2_data[]   = {0x45,0x21,0xef,0x2c,0x5a,0x40};
+    uint8_t  RF_cal2_data[]   = {0xd5,0x21,0xef,0x2c,0x5a,0x40};
     uint8_t  Dem_cal_data[]   = {0x01};   
     uint8_t  Dem_cal2_data[]  = {0x0b,0xdf,0x02};   
 
 	
-    SPI_CE_L();
-	//SPI_CSN_H();
-	//SCKLOW;
-    ucCurrent_Channel = DEFAULT_CHANNEL;                
-	
+    SPI_CE_L();         	
     RF_WriteReg(RST_FSPI, 0x5A);								//Software Reset    			
     RF_WriteReg(RST_FSPI, 0XA5);
-//#ifdef TX_XN    
-	
+    RF_WriteReg(FLUSH_RX, 0);									// CLEAR  RXFIFO	
     RF_WriteReg(FLUSH_TX, 0);									// CLEAR TXFIFO		
-	RF_WriteBuf(W_REGISTER + TX_ADDR,TX_ADDRESS_DEF, 5);	// Writes TX_Address to PN006	
-//#else
-    RF_WriteReg(FLUSH_RX, 0);									// CLEAR  RXFIFO
+	RF_WriteReg(W_REGISTER + STATUS, 0x70);							// CLEAR  STATUS	
 	RF_WriteReg(W_REGISTER + EN_RXADDR, 0x01);							// Enable Pipe0
+	RF_WriteReg(W_REGISTER + SETUP_AW,  0x03);							// address witdth is 5 bytes
+	RF_WriteReg(W_REGISTER + RF_CH,     DEFAULT_CHANNEL);                                       // 2478M HZ     
 	RF_WriteReg(W_REGISTER + RX_PW_P0,  PAYLOAD_WIDTH);						// 8 bytes
+	RF_WriteBuf(W_REGISTER + TX_ADDR,TX_ADDRESS_DEF, 5);	// Writes TX_Address to PN006		
 	RF_WriteBuf(W_REGISTER + RX_ADDR_P0,TX_ADDRESS_DEF,5);	// RX_Addr0 same as TX_Adr for Auto.Ack   
-//#endif
-    RF_WriteReg(W_REGISTER + STATUS, 0x70);							// CLEAR  STATUS	
+    
 	RF_WriteBuf(W_REGISTER + BB_CAL,    BB_cal_data,  sizeof(BB_cal_data));
     RF_WriteBuf(W_REGISTER + RF_CAL2,   RF_cal2_data, sizeof(RF_cal2_data));
     RF_WriteBuf(W_REGISTER + DEM_CAL,   Dem_cal_data, sizeof(Dem_cal_data));
     RF_WriteBuf(W_REGISTER + RF_CAL,    RF_cal_data,  sizeof(RF_cal_data));
-    RF_WriteBuf(W_REGISTER + DEM_CAL2,  Dem_cal2_data,sizeof(Dem_cal2_data));
-    RF_WriteReg(W_REGISTER + SETUP_AW,  0x03);							// address witdth is 5 bytes
-    RF_WriteReg(W_REGISTER + RF_CH,     0);                                       // 2478M HZ
-        
-    RF_WriteReg(W_REGISTER + DYNPD, 0x00);					
-    RF_WriteReg(W_REGISTER + FEATURE, 0x00);
-    RF_WriteReg(W_REGISTER + RF_SETUP,  RF_POWER);						//DBM  		
-  
+    RF_WriteBuf(W_REGISTER + DEM_CAL2,  Dem_cal2_data,sizeof(Dem_cal2_data));   
+      
+    RF_WriteReg(W_REGISTER + DYNPD, 0x00);					   
+    RF_WriteReg(W_REGISTER + RF_SETUP,  RF_POWER);						//DBM  	
+	RF_WriteReg(ACTIVATE, 0x73);	//如果使用W_ACK则需要这句
     
 //#if(TRANSMIT_TYPE == TRANS_ENHANCE_MODE)      
-//    RF_WriteReg(W_REGISTER + SETUP_RETR,0x03);							//  3 retrans... 	
-//    RF_WriteReg(W_REGISTER + EN_AA,     0x01);							// Enable Auto.Ack:Pipe0  
+	
+    RF_WriteReg(W_REGISTER + SETUP_RETR,0x03);							//  3 retrans... 	
+    RF_WriteReg(W_REGISTER + EN_AA,     0x01);							// Enable Auto.Ack:Pipe0  
+	RF_WriteReg(W_REGISTER + FEATURE, 0x02);
 //#elif(TRANSMIT_TYPE == TRANS_BURST_MODE)                                                                
-    RF_WriteReg(W_REGISTER + SETUP_RETR,0x00);							// Disable retrans... 	
-    RF_WriteReg(W_REGISTER + EN_AA,     0x00);							// Disable AutoAck 
+//    RF_WriteReg(W_REGISTER + SETUP_RETR,0x00);							// Disable retrans... 	
+//    RF_WriteReg(W_REGISTER + EN_AA,     0x00);							// Disable AutoAck 
+//	RF_WriteReg(W_REGISTER + FEATURE, 0x00);
 //#endif
 
 //if(PAYLOAD_WIDTH <33)											

@@ -1,7 +1,7 @@
 #include "config.h"
 
 static void loop(void);
-int RXTX = 0;
+
 int main(void)
 {
     /* Init */
@@ -14,8 +14,6 @@ int main(void)
     //TIM4_Init(SysClock,TIME4_Preiod);	  //init Timer4
 	SPI1_INIT();
 	RF_Init();
-	//SPI1_INIT();
-	//RF_TxMode();
 #ifdef TX_XN
 	RF_TxMode();
 #else
@@ -25,27 +23,17 @@ int main(void)
     /* Loop */
     loop();
 }
-uint8_t rxData[8] = {50,51,52};
+uint8_t rxData[8] = {0,51,52};
 void loop(void)
-{
-
-			
+{			
     while (1)
     {        
-		static uint8_t ledStatus = 0;
-		if(ledStatus)
-			GPIO_SetBits(GPIOB, GPIO_Pin_5);
-		else
-			GPIO_ResetBits(GPIOB, GPIO_Pin_5);
-		ledStatus = !ledStatus;
 #ifdef TX_XN
-			ucRF_TxData(rxData,8);
-#else
-			ucRF_DumpRxData(rxData, 8);
-#endif
-		
-        delay_ms(5);
+		ucRF_TxData(rxData,8);
+#else	
+		ucRF_DumpRxData(rxData, 8);
+#endif	
+        //delay_ms(5);
 	}
-
 }
 
