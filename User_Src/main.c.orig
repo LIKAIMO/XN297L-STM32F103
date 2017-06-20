@@ -1,0 +1,92 @@
+#include "config.h"
+
+enum
+{
+	TX,
+	RX
+};
+
+uint8_t buf[32];
+uint8_t rtFlag = TX;//set TX
+uint8_t rtModeFlag = 0; //1 == r , 0 == t
+
+static void loop(void);
+
+int main(void)
+{
+	/* Init */
+	SystemClock_HSI(9);           //init system clock
+	cycleCounterInit();				    // Init cycle counter
+	SysTick_Config(SystemCoreClock / 1000);	//open sysTick, 1ms
+	UART1_init(SysClock,uart1baudSet); //init uart1
+  NVIC_INIT();	                //init interrupt
+  STMFLASH_Unlock();            //arm flash
+  LoadParamsFromEEPROM();				//load parameter
+  LedInit();	                  //init led_GPIO
+  Adc_Init();										//init adc
+	KeyInit();										//init key_gpio
+ 	NRF24L01_INIT();              //init NRF24L01
+  SetTX_Mode();                 //set NRF24L01 on TX mode
+	TIM4_Init(SysClock,TIME4_Preiod);	  //init Timer4
+	
+	/* Loop */
+	loop();
+}
+void loop(void)
+{
+  while (1)             
+	{ 
+		//10Hz loop
+		if(flag10Hz == 1)  
+		{		
+
+			flag10Hz = 0;
+			checkKey();
+			//lowVoltageBeep();
+		}
+
+		//50Hz loop
+		if(flag50Hz == 1)
+		{
+			flag50Hz = 0;
+			cmdReduce();
+			if(!(remoteData.cmd & NEWADDRESS))
+			{
+				rtModeFlag = 0;
+				if(rtFlag != RX)
+				{
+					rtFlag = RX;
+					SetRX_Mode();
+				}
+				printf("{\"roll\":\"%d\",\"pitch\":\"%d\",\"yaw\":\"%d\",\"key\":\"%d\",\"voltage\":\"%d\",\"rollStick\":\"%d\",\"pitchStick\":\"%d\",\"thrStick\":\"%d\",\"yawStick\":\"%d\",\"RVFV\":\"%d%d\"}",
+							flightData.rollAngle,flightData.pitchAngle,flightData.yawAngle,remoteData.key,flightData.voltage,(remoteData.motor[ROLL]-1000)/4,(remoteData.motor[PITCH]-1000)/4,(remoteData.motor[THROTTLE]-1000)/4,
+							(remoteData.motor[YAW]-1000)/4,VERSION_RC,flightData.version);
+				
+				Nrf_Irq();
+			}
+		}
+		
+		// 80Hz 12.5ms
+		if(flag80Hz)
+		{				
+			flag80Hz = 0;
+			powerOn();
+		}
+		if(flag100Hz)
+		{
+			//printf("rol:%d\r,pit:%d\r,thr:%d\r,yaw:%d\r\r\r",remoteData.motor[ROLL],remoteData.motor[PITCH],remoteData.motor[THROTTLE],remoteData.motor[YAW]);	
+			if(rtFlag != TX)
+			{
+				rtFlag = TX;
+				SetTX_Mode();
+			}
+			if(remoteData.cmd & NEWADDRESS)
+			{
+				modifyAddress();
+			}
+			sendF3Data();
+			
+		}
+	}
+}
+

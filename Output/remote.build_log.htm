@@ -1,0 +1,68 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.16.0.0
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: li Microsoft, Microsoft, LIC=9WS9U-SQKXF-5TD3W-QZ4H1-DWAZ9-YB2G9
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Standard  Version: 5.16.0.0
+Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 (build 20)
+Assembler:       Armasm.exe V5.06 (build 20)
+Linker/Locator:  ArmLink.exe V5.06 (build 20)
+Library Manager: ArmAr.exe V5.06 (build 20)
+Hex Converter:   FromElf.exe V5.06 (build 20)
+CPU DLL:         SARMCM3.DLL V5.16.0.0
+Dialog DLL:      DARMSTM.DLL V1.65.0.0
+Target DLL:      UL2CM3.DLL V1.155.12.0
+Dialog DLL:      TARMSTM.DLL V1.64.0.0
+ 
+<h2>Project:</h2>
+D:\github\XN297\Remote.uvprojx
+Project File Date:  06/05/2017
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 (build 20)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Remote'
+compiling delay.c...
+compiling Led.c...
+compiling Tim.c...
+compiling NRF24L01.c...
+HardWareDriver\C\NRF24L01.c(34): warning:  #177-D: variable "status" was declared but never referenced
+        uint8_t status;
+HardWareDriver\C\NRF24L01.c: 1 warning, 0 errors
+compiling UART1.c...
+compiling adc.c...
+compiling Key.c...
+compiling main.c...
+compiling Sys_Fun.c...
+compiling Control.c...
+compiling CommUAV.c...
+linking...
+Program Size: Code=12872 RO-data=416 RW-data=156 ZI-data=1156  
+FromELF: creating hex file...
+".\Output\remote.axf" - 0 Error(s), 1 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
+                ARM::CMSIS:CORE:4.3.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 4.3.0
+
+<h2>Collection of Component include folders:</h2>
+  D:\github\XN297\RTE
+  D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
+  D:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.1.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:4.3.0
+Build Time Elapsed:  00:00:06
+</pre>
+</body>
+</html>
